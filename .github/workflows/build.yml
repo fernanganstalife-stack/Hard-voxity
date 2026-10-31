@@ -1,0 +1,47 @@
+
+name: Compilar HARD VOX VST3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Windows VST3
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configurar CMake
+        run: cmake -S . -B build -A x64
+
+      - name: Compilar HARD VOX
+        run: cmake --build build --config Release --target HardVox_VST3 --parallel
+
+      - name: Verificar VST3
+        shell: pwsh
+        run: |
+          $plugin = "build/HardVox_artefacts/Release/VST3/HARD VOX.vst3"
+          if (!(Test-Path $plugin)) {
+            throw "No se encontró HARD VOX.vst3"
+          }
+
+      - name: Empaquetar VST3
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "build/HardVox_artefacts/Release/VST3/HARD VOX.vst3" -DestinationPath "HARD_VOX_VST3_Windows.zip"
+
+      - name: Subir compilación
+        uses: actions/upload-artifact@v5
+        with:
+          name: HARD_VOX_VST3_ZIP
+          path: HARD_VOX_VST3_Windows.zip
+          if-no-files-found: error
+          retention-days: 14
