@@ -8,7 +8,7 @@ namespace
     const juce::Colour kRed (0xffff2a2a), kDark (0xff0b0507), kPanel (0xff140709);
     const float kAnimLen = 1.25f;
 
-    juce::Image makeCrop (const juce::Image& src, juce::Rectangle<int> r, float feather)
+    juce::Image makeCrop (juce::Image& src, juce::Rectangle<int> r, float feather)
     {
         const float s = (float) src.getWidth() / DW;
         const juce::Rectangle<int> pr ((int) (r.getX() * s), (int) (r.getY() * s),
